@@ -1,0 +1,25 @@
+sed -i 's#downloads.openwrt.org#mirrors.cloud.tencent.com/lede#g' /etc/opkg/distfeeds.conf
+sed -i "s/# //g" /etc/opkg/distfeeds.conf
+sed -i '/openwrt_luci/ { s/snapshots/releases\/18.06.9/g; }'  /etc/opkg/distfeeds.conf
+sed -i '/check_signature/d' /etc/opkg.conf
+rm -rf /tmp/luci-modulecache/
+rm -f /tmp/luci-indexcache
+uci set unbound.@unbound[0].add_local_fqdn="3"
+uci set unbound.@unbound[0].add_wan_fqdn="1"
+uci set unbound.@unbound[0].dhcp_link="odhcpd"
+uci set unbound.@unbound[0].dhcp4_slaac6="1"
+uci set unbound.@unbound[0].unbound_control="1"
+uci commit unbound
+service unbound restart
+uci set dhcp.odhcpd.leasefile="/var/lib/odhcpd/dhcp.leases"
+uci set dhcp.odhcpd.leasetrigger="/usr/lib/unbound/odhcpd.sh"
+uci commit dhcp
+service odhcpd restart
+uci set firewall.wg="rule"
+uci set firewall.wg.name="Allow-WireGuard"
+uci set firewall.wg.src="wan"
+uci set firewall.wg.dest_port="13231"
+uci set firewall.wg.proto="udp"
+uci set firewall.wg.target="ACCEPT"
+uci commit firewall
+service firewall restart
