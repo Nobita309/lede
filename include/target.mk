@@ -53,12 +53,12 @@ DEFAULT_PACKAGES.nas:=\
 	mdadm
 # For router targets
 DEFAULT_PACKAGES.router:=\
-	dnsmasq-full firewall iptables ppp ppp-mod-pppoe odhcp6c odhcpd-ipv6only ip6tables libip6tc kmod-ipt-nat6 \
-	block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw kmod-tun \
-	iptables-mod-tproxy iptables-mod-extra ipset ip-full default-settings luci luci-proto-ipv6 \
-	ddns-scripts_aliyun ddns-scripts_dnspod luci-app-ddns luci-app-upnp luci-app-autoreboot \
-	luci-app-arpbind luci-app-filetransfer luci-app-vsftpd luci-app-ssr-plus luci-app-vlmcsd \
-	luci-app-accesscontrol luci-app-nlbwmon luci-app-turboacc luci-app-wol curl ca-certificates
+	firewall4 kmod-8139cp kmod-8139too kmod-button-hotplug kmod-e1000e kmod-fs-f2fs luci kmod-i40e kmod-igb \
+	kmod-igbvf kmod-igc kmod-ixgbe kmod-ixgbevf kmod-nf-nathelper kmod-nf-nathelper-extra ipset ip-full kmod-nft-offload \
+	kmod-pcnet32 kmod-r8101 kmod-r8125 kmod-r8126 kmod-r8168 kmod-tulip kmod-usb-hid kmod-usb-net kmod-usb-net-asix kmod-usb-net-asix-ax88179 \
+	kmod-usb-net-rtl8150 kmod-vmxnet3 luci-app-package-manager luci-compat qrencode luci-lib-ipkg mkf2fs nftables partx-utils ppp ppp-mod-pppoe procd \
+	kmod-amazon-ena kmod-amd-xgbe kmod-bnx2 kmod-e1000 kmod-forcedeth kmod-fs-vfat kmod-tg3 odhcp6c odhcpd wireguard-tools luci-proto-wireguard luci-app-sqm \
+	luci-app-unbound unbound-control unbound-daemon ddns-scripts-noip luci-app-ddns parted losetup resize2fs default-settings
 
 ifneq ($(DUMP),)
   all: dumpinfo
