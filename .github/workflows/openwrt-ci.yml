@@ -27,13 +27,50 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Sync Upstream Changes
-        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
+      - name: Configure Git for Actions
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Backup local .config
+        run: cp .config .config.bak || true
+
+      - name: Add upstream remote & fetch
+        run: |
+          git remote add upstream https://github.com/coolsnowwolf/lede.git
+          git fetch upstream master
+
+      - name: Attempt merge from upstream/master
+        id: try_merge
+        run: |
+          set -e
+          git merge upstream/master --no-ff -m "chore: sync from upstream/master" || echo "::set-output name=conflict::true"
+
+      - name: Handle conflicts by opening a PR
+        if: steps.try_merge.outputs.conflict == 'true'
+        run: |
+          echo "⚠️ Merge conflict detected, aborting merge and opening PR"
+          git merge --abort
+        # Push the conflict state and open a PR for manual resolution
+      - name: Push conflict branch & open PR
+        if: steps.try_merge.outputs.conflict == 'true'
+        uses: peter-evans/create-pull-request@v5
         with:
-          target_sync_branch: master
-          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
-          upstream_sync_repo: coolsnowwolf/lede
-          upstream_sync_branch: master
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: sync-with-upstream
+          title:    "🔀 Conflict syncing upstream/master"
+          body:     |
+            The automatic sync with upstream/master hit merge conflicts.
+            Please resolve them on `sync-with-upstream` and merge back into `master`.
+          base:     master
+
+      - name: Restore .config & commit if clean merge
+        if: steps.try_merge.outputs.conflict != 'true'
+        run: |
+          mv .config.bak .config
+          git add .config
+          git commit --amend --no-edit
+          git push origin master
 
   build_openwrt:
     name: Build OpenWrt Firmware
