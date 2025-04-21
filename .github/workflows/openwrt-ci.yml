@@ -24,7 +24,8 @@ jobs:
       - name: Checkout Fork
         uses: actions/checkout@v3
         with:
-          ref: master
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Sync Upstream Changes
         uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
